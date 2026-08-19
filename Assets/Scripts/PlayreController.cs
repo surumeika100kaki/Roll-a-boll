@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class PlayreController : MonoBehaviour
 {
     public float speed;
+    public Transform player;
     public TextMeshProUGUI CountText;
     public GameObject WinTextObjct;
 
@@ -14,6 +15,7 @@ public class PlayreController : MonoBehaviour
     private int count;
     private float movementX;
     private float movementY;
+    private int ClireCount = 10;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -29,8 +31,8 @@ public class PlayreController : MonoBehaviour
     }
     void SetCountText()
     {
-        CountText.text = $"Count:{count}";
-        if(count >= 12)
+        CountText.text = $"ClireCount: {count}/{ClireCount}";
+        if(count >= ClireCount)
         {
             WinTextObjct.SetActive(true);
             Destroy(GameObject.FindGameObjectWithTag("Enemy"));
@@ -45,7 +47,21 @@ public class PlayreController : MonoBehaviour
     {
         if (other.gameObject.CompareTag("PickUp"))
         {
-            other.gameObject.SetActive(false);
+            Destroy(other.gameObject);
+        }
+        if (other.gameObject.CompareTag("teleport"))
+        {
+            Destroy(other.gameObject);
+            while (true)
+            {
+                float x = Random.Range(0, MazeData.width);
+                float z = Random.Range(0, MazeData.height);
+                if (MazeData.wall[(int)x, (int)z] == true)
+                {
+                    player.position = new Vector3(x * 2, 0.5f, z * 2);
+                    break;
+                }
+            }
         }
         count += 1;
         SetCountText();
